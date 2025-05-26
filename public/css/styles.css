@@ -184,7 +184,111 @@ footer {
   }
 }
 
+#inv-display li a {
+  color: #333;
+  text-decoration: none;
+  padding: 8px 12px;
+  font-size: 1.5rem;
+}
+
+#inv-display li {
+  list-style: none;
+  margin: 10px;
+  width: 30%;
+}
+
+#inv-display li a:hover {
+  background: #ffcc00;
+  color: black;
+}
+
+#inv-display {
+  display: flex;
+  flex-wrap: wrap; /* Allows items to wrap to the next row */
+  justify-content: space-around; /* Creates even spacing */
+  align-items: center;
+  margin-top: 20px;
+}
+
+#inv-display li a img {
+  width: 95%; /* Adjust size */
+  aspect-ratio: 2 / 1.5; /* Maintain square aspect ratio */
+  margin-right: 10px; /* Space from text */
+}
+
+nav{
+  position: sticky; /* Fixes the navigation bar at the top */
+  top: 0; /* Sticks to the top of the viewport */
+  background-color: #333; /* Background color for the nav */
+  z-index: 1000; /* Ensures it stays above other content */
+}
+
+@media (max-width: 768px) {
+  main #inv-display {
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center items */
+  justify-content: center; /* Center items horizontally */
+  margin: 0;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0;
+}
+
+  #inv-display li {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding:0%;
+}
+nav{
+  width: 100%;
+}
+nav ul{
+  flex-direction: column; /* Stack navigation items vertically */
+  align-items: center; /* Center items horizontally */
+  display: none; /* Hide navigation items by default */
+  font-size: larger;
+}
+
+.show-nav {
+  display: flex; /* Adjust as needed */
+  flex-direction: column;
+}
+
+}
+
+.hamburger {
+  font-size: 30px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgb(253, 251, 251); /* Adjust color */
+  padding: 10px;
+}
+
+#nav-menu {
+  display: none; /* Initially hidden */
+  flex-direction: column;
+  background-color: #333;
+  padding: 10px;
+}
+
+#nav-menu.active {
+  display: flex; /* Shows the menu when active */
+}
+
 @media (min-width: 768px) {
+  #nav-menu {
+    display: flex; /* Ensures the menu is visible on larger screens */
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+  .hamburger {
+    display: none; /* Hide hamburger button on larger screens */
+  }
+
   #wrapper {
     margin: 20px auto;
     width: 90%;
