@@ -84,7 +84,6 @@ nav ul li a {
   text-decoration: none;
 }
 
-
 /******* Main Content ***************/
 main {
   padding: 20px;
@@ -115,25 +114,25 @@ main {
 }
 
 #reviews p::before {
-    content: "• "; /* Bullet character */
-    font-weight: bold;
-    margin-right: 5px;
+  content: "• "; /* Bullet character */
+  font-weight: bold;
+  margin-right: 5px;
 }
 
 #hero h1 {
-    text-align: left;
-    font-size: 2.5rem;
-  }
+  text-align: left;
+  font-size: 2.5rem;
+}
 
-  #hero-text {
-    font-size: 1.5rem;
-    width: 20%;
-    position: absolute;
-    left: 10%;
-    top: 30rem;
-    background: rgba(255, 255, 255, 0.6);
-    color: #4c96d7;
-  }
+#hero-text {
+  font-size: 1.5rem;
+  width: 20%;
+  position: absolute;
+  left: 10%;
+  top: 30rem;
+  background: rgba(255, 255, 255, 0.6);
+  color: #4c96d7;
+}
 /******* Footer ***************/
 footer {
   padding: 10px;
@@ -142,11 +141,11 @@ footer {
 
 /******* Responsive Design ***************/
 @media (max-width: 768px) {
-#wrapper{
+  #wrapper {
     background-color: #fff;
-}
+  }
 
-#hero-text {
+  #hero-text {
     font-size: 0.7rem;
     width: 20%;
     left: 10%;
@@ -212,50 +211,65 @@ footer {
 
 #inv-display li a img {
   width: 95%; /* Adjust size */
-  aspect-ratio: 2 / 1.5; /* Maintain square aspect ratio */
+  height: 15rem;
   margin-right: 10px; /* Space from text */
 }
 
-nav{
+nav {
   position: sticky; /* Fixes the navigation bar at the top */
   top: 0; /* Sticks to the top of the viewport */
   background-color: #333; /* Background color for the nav */
   z-index: 1000; /* Ensures it stays above other content */
 }
 
+@media (max-width: 1268px) {
+  main #inv-display {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(45%, 1fr));
+    gap: 20px;
+  }
+  #inv-display li a img {
+    width: 95%; /* Adjust size */
+    height: 10rem;
+    margin-right: 10px; /* Space from text */
+  }
+  #inv-display li {
+    width: 95%;
+  }
+}
+
 @media (max-width: 768px) {
   main #inv-display {
-  display: flex;
-  flex-direction: column; /* Stack items vertically */
-  align-items: center; /* Center items */
-  justify-content: center; /* Center items horizontally */
-  margin: 0;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0;
-}
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items */
+    justify-content: center; /* Center items horizontally */
+    margin: 0;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+  }
 
   #inv-display li {
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  padding:0%;
-}
-nav{
-  width: 100%;
-}
-nav ul{
-  flex-direction: column; /* Stack navigation items vertically */
-  align-items: center; /* Center items horizontally */
-  display: none; /* Hide navigation items by default */
-  font-size: larger;
-}
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0%;
+  }
+  nav {
+    width: 100%;
+  }
+  nav ul {
+    flex-direction: column; /* Stack navigation items vertically */
+    align-items: center; /* Center items horizontally */
+    display: none; /* Hide navigation items by default */
+    font-size: larger;
+  }
 
-.show-nav {
-  display: flex; /* Adjust as needed */
-  flex-direction: column;
-}
-
+  .show-nav {
+    display: flex; /* Adjust as needed */
+    flex-direction: column;
+  }
 }
 
 .hamburger {
@@ -302,8 +316,6 @@ nav ul{
     margin: 0 auto;
   }
 
-  
-
   .siteName a {
     font-size: 3rem;
   }
@@ -336,4 +348,85 @@ nav ul{
       fixed;
     background-size: cover;
   }
+}
+
+/* Single vehicle detail page styles */
+.vehicle-detail {
+  display: flex;
+  flex-direction: column; /* Default: stacked layout for small screens */
+  align-items: center;
+  padding: 20px;
+  max-width: 90%;
+  margin: auto;
+}
+
+.vehicle-detail img {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  border-radius: 10px;
+}
+
+.vehicle-detail p {
+  font-size: 1rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .vehicle-detail {
+    flex-direction: row; /* Side-by-side layout for larger screens */
+    gap: 20px;
+  }
+
+  .vehicle-detail img {
+    flex: 1;
+    max-width: 400px;
+  }
+
+  .vehicle-info p {
+    text-align: left;
+  }
+}
+
+/* error page styles */
+
+.error-container {
+  max-width: 600px;
+  margin: auto;
+  background: url("../images/site/404.png") center center fixed;
+  background-size: cover;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  position: relative; /* Needed for absolute positioning of overlay */
+}
+
+
+.error-container h1 {
+  color: #f5f3f3;
+  background: rgba(0, 0, 0, 0.8); 
+  width: fit-content;
+  margin: 0 auto 10px;
+  padding: 5px 10px;
+}
+.error-container p {
+  font-size: 18px;
+  margin:0 auto;
+  padding: 10px;
+  width: fit-content;
+  color: #f5f3f3;
+  background: rgba(0, 0, 0, 0.8);
+}
+.error-container .home-btn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: #333333;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+}
+.home-btn:hover {
+  background: #1f2021;
 }
