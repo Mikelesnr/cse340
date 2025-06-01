@@ -3,6 +3,11 @@
 <div class="register-container">
   <% if (errors) { %>
   <p class="error-message"><%= errors %></p>
+  <ul class="notice">
+    <% errors.array().forEach(error => { %>
+    <li><%= error.msg %></li>
+    <% }) %>
+  </ul>
   <% } %>
 
   <form id="registerForm" action="/account/register" method="POST">

@@ -24,8 +24,6 @@ Util.getNav = async function (req, res, next) {
   return list;
 };
 
-module.exports = Util;
-
 /* **************************************
  * Build the classification view HTML
  * ************************************ */
@@ -140,3 +138,5 @@ Util.buildRegister = async function () {
  **************************************** */
 Util.handleErrors = (fn) => (req, res, next) =>
   Promise.resolve(fn(req, res, next)).catch(next);
+
+module.exports = Util;
