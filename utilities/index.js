@@ -98,6 +98,41 @@ Util.buildVehicleHtml = (vehicle) => {
     </div>`;
 };
 
+Util.buildLogin = async function () {
+  let formHtml = `
+    <form action="/account/login" method="POST">
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required />
+      
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required />
+
+      <button type="submit">Login</button>
+    </form>
+    <p>Don't have an account? <a href="/account/register">Register here</a>.</p>
+  `;
+  return formHtml;
+};
+
+Util.buildRegister = async function () {
+  let formHtml = `
+    <form action="/account/register" method="POST">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required />
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required />
+
+      <button type="submit">Register</button>
+    </form>
+    <p>Already have an account? <a href="/account/login">Login here</a>.</p>
+  `;
+  return formHtml;
+};
+
 /* ****************************************
  * Middleware For Handling Errors
  * Wrap other function in this for

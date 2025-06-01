@@ -12,7 +12,6 @@ invCont.buildByClassificationId = async function (req, res, next) {
     const data = await invModel.getInventoryByClassificationId(
       classification_id
     );
-    console.log("Data from invModel.getInventoryByClassificationId:", data);
 
     // Handle case where data is empty or undefined
     if (!data || data.length === 0) {
