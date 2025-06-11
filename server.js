@@ -1,29 +1,24 @@
 const express = require("express");
 const expressLayouts = require("express-ejs-layouts");
 const env = require("dotenv").config();
+const session = require("express-session");
+const flash = require("connect-flash");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+
 const static = require("./routes/static");
 const inventoryRoute = require("./routes/inventoryRoute");
 const accountRoute = require("./routes/accountRoute");
-const errorRoute = require("./routes/errorRoute"); // NEW: 500 Error Trigger Route
+const errorRoute = require("./routes/errorRoute"); // 500 Error Trigger Route
 const baseController = require("./controllers/baseController");
 const utilities = require("./utilities/index");
-const session = require("express-session");
 const pool = require("./database/");
-const flash = require("connect-flash");
-const bodyParser = require("body-parser");
 
 const app = express();
 
 /* ***********************
- * View Engine and Templates
- *************************/
-app.set("view engine", "ejs");
-app.use(expressLayouts);
-app.set("layout", "./layouts/layout");
-
-/* ***********************
  * Middleware
- *************************/
+ * ************************/
 app.use(
   session({
     store: new (require("connect-pg-simple")(session))({
@@ -38,25 +33,36 @@ app.use(
 );
 
 // Express Messages Middleware
-app.use(flash());
+app.use(require("connect-flash")());
 app.use(function (req, res, next) {
   res.locals.messages = require("express-messages")(req, res);
   next();
 });
 
+/* ***********************
+ * View Engine and Templates
+ *************************/
+app.set("view engine", "ejs");
+app.use(expressLayouts);
+app.set("layout", "./layouts/layout");
+
+/* ***********************
+ * Middleware
+ *************************/
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(utilities.checkJWTToken);
 
 /* ***********************
  * Routes
  *************************/
 app.use(static);
-
-// Apply error-handling middleware to all routes
 app.get("/", utilities.handleErrors(baseController.buildHome));
 app.use("/inv", utilities.handleErrors(inventoryRoute));
 app.use("/account", utilities.handleErrors(accountRoute));
-app.use("/error", utilities.handleErrors(errorRoute)); // NEW: 500 Error Test Route
+app.use("/error", utilities.handleErrors(errorRoute)); // Error Test Route
 
 /* ***********************
  * File Not Found Route
@@ -69,7 +75,7 @@ app.use(async (req, res, next) => {
 });
 
 /* ***********************
- * Global Express Error Handler (Displays Errors in Footer)
+ * Global Express Error Handler
  *************************/
 app.use(async (err, req, res, next) => {
   let nav = await utilities.getNav();

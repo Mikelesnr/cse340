@@ -27,6 +27,7 @@ validate.loginRules = () => {
 validate.checkLoginData = async (req, res, next) => {
   const { account_email } = req.body;
   let errors = validationResult(req);
+  console.log("validation reached");
 
   if (!errors.isEmpty()) {
     let nav = await utilities.getNav();
