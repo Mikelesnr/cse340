@@ -70,16 +70,11 @@ invCont.getInventoryById = async function (req, res, next) {
         );
         accountData =
           (await accountModel.getAccountById(decoded.account_id)) || {};
-        console.log("Account Type:", accountData.account_type);
       } catch (error) {
         console.warn("JWT verification failed:", error);
         res.clearCookie("jwt"); //Clear expired JWT session
       }
     }
-
-    // Debugging: Log account type if available
-    console.log("Account Type:", accountData.account_type || "Not logged in");
-
     // Pass accountData to vehicleHtml to control button visibility
     const vehicleHtml = utilities.buildVehicleHtml(data, accountData);
 
@@ -201,9 +196,7 @@ invCont.addInventoryItem = async function (req, res, next) {
  * ************************** */
 invCont.editInventoryView = async function (req, res, next) {
   try {
-    console.log(`params:${req.params.inventoryId}`);
     const inv_id = parseInt(req.params.inventoryId);
-    console.log(`id: ${inv_id}`);
     const nav = await utilities.getNav();
     const itemData = await invModel.getInventoryById(inv_id);
 
@@ -214,12 +207,12 @@ invCont.editInventoryView = async function (req, res, next) {
       });
     }
 
-    const body = await utilities.buildEditInventoryView(null, itemData); // ✅ FIX: Generate correct body content
+    const body = await utilities.buildEditInventoryView(null, itemData);
 
     res.render("inventory/edit-inventory", {
       title: `Edit ${itemData.inv_make} ${itemData.inv_model}`,
       nav,
-      body, // ✅ FIX: Ensure 'body' is included in the render object
+      body,
       errors: null,
     });
   } catch (error) {
@@ -264,8 +257,6 @@ invCont.updateInventory = async function (req, res, next) {
   );
 
   if (updateResult) {
-    console.log("Update result:", updateResult); // ✅ Debug log to verify returned data
-
     // Ensure properties exist before using them
     const itemName = `${updateResult?.inv_make ?? "Unknown"} ${
       updateResult?.inv_model ?? "Vehicle"

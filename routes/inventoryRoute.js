@@ -83,7 +83,7 @@ router.post(
   restrictedAccess,
   validateInventory, // Ensuring the same validation rules are applied
   handleValidationErrors,
-  utilities.handleErrors(invController.updateInventory) // ✅ Controller function will be added next
+  utilities.handleErrors(invController.updateInventory)
 );
 
 // Route to display delete confirmation view (restricted)
