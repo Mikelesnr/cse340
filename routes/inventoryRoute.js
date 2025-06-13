@@ -27,8 +27,8 @@ router.get(
 // Route to render inventory management view (restricted to logged-in Employee/Admin)
 router.get(
   "/management",
-  verifyLoggedIn, // Check authentication first
-  restrictedAccess, // Then check role
+  verifyLoggedIn,
+  restrictedAccess,
   utilities.handleErrors(invController.renderManagementView)
 );
 
@@ -66,6 +66,40 @@ router.post(
   validateInventory,
   handleValidationErrors,
   utilities.handleErrors(invController.addInventoryItem)
+);
+
+// **Route for editing inventory (restricted)**
+router.get(
+  "/edit/:inventoryId",
+  verifyLoggedIn,
+  restrictedAccess,
+  utilities.handleErrors(invController.editInventoryView)
+);
+
+// **New Route for Updating Inventory**
+router.post(
+  "/update",
+  verifyLoggedIn,
+  restrictedAccess,
+  validateInventory, // Ensuring the same validation rules are applied
+  handleValidationErrors,
+  utilities.handleErrors(invController.updateInventory) // ✅ Controller function will be added next
+);
+
+// Route to display delete confirmation view (restricted)
+router.get(
+  "/delete/:inventoryId",
+  verifyLoggedIn,
+  restrictedAccess,
+  utilities.handleErrors(invController.deleteInventoryView)
+);
+
+// Route to process inventory deletion (restricted)
+router.post(
+  "/delete",
+  verifyLoggedIn,
+  restrictedAccess,
+  utilities.handleErrors(invController.deleteInventory)
 );
 
 module.exports = router;

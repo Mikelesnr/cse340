@@ -1,5 +1,8 @@
 const invModel = require("../models/inventory-model");
+const accountModel = require("../models/account-model");
 const utilities = require("../utilities/index");
+const jwt = require("jsonwebtoken");
+const env = require("dotenv").config();
 
 const invCont = {};
 
@@ -54,7 +57,31 @@ invCont.getInventoryById = async function (req, res, next) {
     }
 
     const nav = await utilities.getNav();
-    const vehicleHtml = utilities.buildVehicleHtml(data);
+
+    // Initialize accountData safely
+    let accountData = {};
+
+    // Check if user is logged in and retrieve account data
+    if (req.cookies.jwt) {
+      try {
+        const decoded = jwt.verify(
+          req.cookies.jwt,
+          process.env.ACCESS_TOKEN_SECRET
+        );
+        accountData =
+          (await accountModel.getAccountById(decoded.account_id)) || {};
+        console.log("Account Type:", accountData.account_type);
+      } catch (error) {
+        console.warn("JWT verification failed:", error);
+        res.clearCookie("jwt"); //Clear expired JWT session
+      }
+    }
+
+    // Debugging: Log account type if available
+    console.log("Account Type:", accountData.account_type || "Not logged in");
+
+    // Pass accountData to vehicleHtml to control button visibility
+    const vehicleHtml = utilities.buildVehicleHtml(data, accountData);
 
     res.render("layouts/layout", {
       title: `${data.inv_make} ${data.inv_model} (${data.inv_year})`,
@@ -166,6 +193,166 @@ invCont.addInventoryItem = async function (req, res, next) {
       nav: await utilities.getNav(),
       body: await utilities.buildAddInventoryView(req.flash("error"), req.body), // Preserve input
     });
+  }
+};
+
+/* ***************************
+ *  Build inventory edit view
+ * ************************** */
+invCont.editInventoryView = async function (req, res, next) {
+  try {
+    console.log(`params:${req.params.inventoryId}`);
+    const inv_id = parseInt(req.params.inventoryId);
+    console.log(`id: ${inv_id}`);
+    const nav = await utilities.getNav();
+    const itemData = await invModel.getInventoryById(inv_id);
+
+    if (!itemData) {
+      return next({
+        status: 404,
+        message: "Inventory item not found.",
+      });
+    }
+
+    const body = await utilities.buildEditInventoryView(null, itemData); // ✅ FIX: Generate correct body content
+
+    res.render("inventory/edit-inventory", {
+      title: `Edit ${itemData.inv_make} ${itemData.inv_model}`,
+      nav,
+      body, // ✅ FIX: Ensure 'body' is included in the render object
+      errors: null,
+    });
+  } catch (error) {
+    console.error("Error in editInventoryView:", error);
+    next({
+      status: error.status || 500,
+      message: "Error retrieving inventory details.",
+    });
+  }
+};
+
+/* ***************************
+ *  Update Inventory Data
+ * ************************** */
+invCont.updateInventory = async function (req, res, next) {
+  let nav = await utilities.getNav();
+  const {
+    inv_id,
+    inv_make,
+    inv_model,
+    inv_description,
+    inv_image,
+    inv_thumbnail,
+    inv_price,
+    inv_year,
+    inv_miles,
+    inv_color,
+    classification_id,
+  } = req.body;
+  const updateResult = await invModel.updateInventory(
+    inv_id,
+    inv_make,
+    inv_model,
+    inv_description,
+    inv_image,
+    inv_thumbnail,
+    inv_price,
+    inv_year,
+    inv_miles,
+    inv_color,
+    classification_id
+  );
+
+  if (updateResult) {
+    console.log("Update result:", updateResult); // ✅ Debug log to verify returned data
+
+    // Ensure properties exist before using them
+    const itemName = `${updateResult?.inv_make ?? "Unknown"} ${
+      updateResult?.inv_model ?? "Vehicle"
+    }`;
+
+    req.flash("notice", `The ${itemName} was successfully updated.`);
+    return res.redirect(`/inv/detail/${updateResult?.inv_id}`);
+  } else {
+    const classificationSelect = await utilities.buildClassificationList(
+      classification_id
+    );
+    const itemName = `${inv_make} ${inv_model}`;
+    req.flash("notice", "Sorry, the insert failed.");
+    res.status(501).render("inventory/edit-inventory", {
+      title: "Edit " + itemName,
+      nav,
+      classificationSelect: classificationSelect,
+      errors: null,
+      inv_id,
+      inv_make,
+      inv_model,
+      inv_year,
+      inv_description,
+      inv_image,
+      inv_thumbnail,
+      inv_price,
+      inv_miles,
+      inv_color,
+      classification_id,
+    });
+  }
+};
+
+/* ***************************
+ *  Delete Inventory View
+ * ************************** */
+invCont.deleteInventoryView = async function (req, res, next) {
+  try {
+    const inv_id = parseInt(req.params.inventoryId);
+    const nav = await utilities.getNav();
+    const itemData = await invModel.getInventoryById(inv_id);
+
+    if (!itemData) {
+      return next({
+        status: 404,
+        message: "Inventory item not found.",
+      });
+    }
+
+    res.render("inventory/delete-confirm", {
+      title: `Delete ${itemData.inv_make} ${itemData.inv_model}`,
+      nav,
+      errors: null,
+      inv_id: itemData.inv_id,
+      inv_make: itemData.inv_make,
+      inv_model: itemData.inv_model,
+      inv_year: itemData.inv_year,
+      inv_price: itemData.inv_price,
+    });
+  } catch (error) {
+    console.error("Error in deleteInventoryView:", error);
+    next({
+      status: error.status || 500,
+      message: "Error retrieving inventory details.",
+    });
+  }
+};
+
+/* ***************************
+ *  Process Delete Inventory
+ * ************************** */
+invCont.deleteInventory = async function (req, res, next) {
+  try {
+    const inv_id = parseInt(req.body.inv_id);
+    const deleteResult = await invModel.deleteInventoryItem(inv_id);
+
+    if (deleteResult.rowCount > 0) {
+      req.flash("notice", "Inventory item deleted successfully.");
+      return res.redirect("/inv/management");
+    } else {
+      req.flash("notice", "Inventory deletion failed.");
+      return res.redirect(`/inv/delete/${inv_id}`);
+    }
+  } catch (error) {
+    console.error("Error in deleteInventory:", error);
+    req.flash("notice", "An unexpected error occurred.");
+    return res.redirect(`/inv/delete/${req.body.inv_id}`);
   }
 };
 
