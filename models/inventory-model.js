@@ -180,6 +180,34 @@ async function deleteInventoryItem(inv_id) {
   }
 }
 
+/* ***************************
+ *  Get All Cars with Pagination
+ * ************************** */
+async function getPaginatedCars(page = 1, limit = 10) {
+  try {
+    const offset = (page - 1) * limit;
+    const sql =
+      "SELECT * FROM public.inventory ORDER BY inv_make, inv_model LIMIT $1 OFFSET $2";
+    const data = await pool.query(sql, [limit, offset]);
+
+    // Get total number of cars for pagination metadata
+    const totalCarsQuery = await pool.query(
+      "SELECT COUNT(*) FROM public.inventory"
+    );
+    const totalCars = parseInt(totalCarsQuery.rows[0].count, 10);
+
+    return {
+      cars: data.rows,
+      totalCars,
+      totalPages: Math.ceil(totalCars / limit),
+      currentPage: page,
+    };
+  } catch (error) {
+    console.error("Pagination Error:", error);
+    throw new Error("Error fetching paginated cars.");
+  }
+}
+
 module.exports = {
   getClassifications,
   getInventoryByClassificationId,
@@ -189,4 +217,5 @@ module.exports = {
   updateInventoryItem,
   deleteInventoryItem,
   updateInventory,
+  getPaginatedCars,
 };

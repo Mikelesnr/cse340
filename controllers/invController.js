@@ -347,4 +347,52 @@ invCont.deleteInventory = async function (req, res, next) {
   }
 };
 
+/* ***************************
+ *  Render Dashboard
+ * ************************** */
+invCont.renderDashboard = async function (req, res, next) {
+  try {
+    const page = parseInt(req.query.page, 10) || 1;
+    const nav = await utilities.getNav();
+
+    // Get full account details from JWT for role-based access
+    let accountData = {};
+    if (req.cookies.jwt) {
+      try {
+        const decoded = jwt.verify(
+          req.cookies.jwt,
+          process.env.ACCESS_TOKEN_SECRET
+        );
+        accountData =
+          (await accountModel.getAccountById(decoded.account_id)) || {};
+      } catch (error) {
+        console.warn("JWT verification failed:", error);
+        res.clearCookie("jwt");
+      }
+    }
+
+    // Fetch paginated inventory items
+    const {
+      cars: vehicles,
+      totalPages,
+      currentPage,
+    } = await invModel.getPaginatedCars(page);
+
+    // Generate pagination controls
+    const paginationHtml = utilities.buildPagination(totalPages, currentPage);
+
+    // Render dashboard
+    res.render("inventory/dashboard", {
+      title: "Vehicle Dashboard",
+      nav,
+      vehicles, // ✅ Pass vehicles correctly
+      paginationHtml, // ✅ Pass pagination controls
+      accountData, // ✅ Ensure role-based access is handled
+    });
+  } catch (error) {
+    console.error("Error in renderDashboard:", error);
+    next({ status: 500, message: "Error retrieving dashboard data." });
+  }
+};
+
 module.exports = invCont;
