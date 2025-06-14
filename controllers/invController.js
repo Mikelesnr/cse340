@@ -352,7 +352,7 @@ invCont.deleteInventory = async function (req, res, next) {
  * ************************** */
 invCont.renderDashboard = async function (req, res, next) {
   try {
-    const page = parseInt(req.query.page, 10) || 1;
+    const page = parseInt(req.params.page, 10) || 1;
     const nav = await utilities.getNav();
 
     // Get full account details from JWT for role-based access
@@ -385,9 +385,9 @@ invCont.renderDashboard = async function (req, res, next) {
     res.render("inventory/dashboard", {
       title: "Vehicle Dashboard",
       nav,
-      vehicles, // ✅ Pass vehicles correctly
-      paginationHtml, // ✅ Pass pagination controls
-      accountData, // ✅ Ensure role-based access is handled
+      vehicles,
+      paginationHtml,
+      accountData,
     });
   } catch (error) {
     console.error("Error in renderDashboard:", error);

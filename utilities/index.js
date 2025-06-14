@@ -352,7 +352,7 @@ Util.buildPagination = function (totalPages, currentPage) {
 
   for (let page = 1; page <= totalPages; page++) {
     paginationHtml += `
-      <a href="/dashboard?page=${page}" class="pagination-link ${
+      <a href="/inv/dashboard/${page}" class="pagination-link ${
       page === currentPage ? "active" : ""
     }">${page}</a>
     `;
